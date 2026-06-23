@@ -24,4 +24,10 @@ class TierMatcherTest {
     fun soldOut_false() {
         assertFalse(TierMatcher.matchesText("580元 缺货登记", 580))
     }
+
+    @Test
+    fun soldOutContext() {
+        assertTrue(TierMatcher.isSoldOutContext("缺货登记"))
+        assertFalse(TierMatcher.isSoldOutContext("580元 有票"))
+    }
 }

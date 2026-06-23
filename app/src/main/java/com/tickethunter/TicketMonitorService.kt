@@ -163,7 +163,6 @@ class TicketMonitorService : AccessibilityService() {
             clickNode(match.node)
             purchaseMachine?.start(match.tier)
             monitorState = MonitorState.BUYING
-            purchaseMachine?.onContentChanged(root)
         } else {
             monitorState = MonitorState.MONITORING
         }
@@ -198,6 +197,7 @@ class TicketMonitorService : AccessibilityService() {
             MonitorState.BUYING -> "点击购买..."
             MonitorState.SELECTING_SESSION -> "选择场次..."
             MonitorState.SELECTING_TIER -> "选择票档 ¥$tier..."
+            MonitorState.SELECTING_QUANTITY -> "选择数量 ${task.quantity}..."
             MonitorState.CONFIRMING -> "确认订单..."
             MonitorState.PAUSED -> "等待验证码"
             MonitorState.DONE -> "已到支付页"

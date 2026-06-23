@@ -11,6 +11,7 @@ interface PlatformAdapter {
     fun stepBuy(root: AccessibilityNodeInfo): StepResult
     fun stepSession(root: AccessibilityNodeInfo): StepResult
     fun stepTier(root: AccessibilityNodeInfo, tier: Int): StepResult
+    fun stepQuantity(root: AccessibilityNodeInfo, quantity: Int): StepResult
     fun stepConfirm(root: AccessibilityNodeInfo): StepResult
     fun isPaymentPage(root: AccessibilityNodeInfo): Boolean
     fun isCaptchaPage(root: AccessibilityNodeInfo): Boolean
