@@ -1,5 +1,7 @@
 package com.tickethunter
 
+import android.os.Handler
+import android.os.Looper
 import android.view.accessibility.AccessibilityNodeInfo
 
 class PurchaseStateMachine(
@@ -12,9 +14,15 @@ class PurchaseStateMachine(
     var state: MonitorState = MonitorState.BUYING
         private set
 
-    private var stepDeadline = 0L
+    var matchedTier: Int = 0
+        private set
 
-    fun start() {
+    private var stepDeadline = 0L
+    private val handler = Handler(Looper.getMainLooper())
+    private var pendingStep: Runnable? = null
+
+    fun start(tier: Int) {
+        matchedTier = tier
         state = MonitorState.BUYING
         stepDeadline = System.currentTimeMillis() + STEP_TIMEOUT_MS
         onStateChange(state)
@@ -52,7 +60,7 @@ class PurchaseStateMachine(
         val result = when (state) {
             MonitorState.BUYING -> adapter.stepBuy(root)
             MonitorState.SELECTING_SESSION -> adapter.stepSession(root)
-            MonitorState.SELECTING_TIER -> adapter.stepTier(root, task.targetTier)
+            MonitorState.SELECTING_TIER -> adapter.stepTier(root, matchedTier)
             MonitorState.CONFIRMING -> adapter.stepConfirm(root)
             else -> return
         }
@@ -64,19 +72,35 @@ class PurchaseStateMachine(
     }
 
     fun resetToMonitoring() {
+        cancelPending()
         state = MonitorState.MONITORING
         onStateChange(state)
     }
 
+    fun destroy() {
+        cancelPending()
+    }
+
     private fun advance() {
-        state = when (state) {
+        cancelPending()
+        val next = when (state) {
             MonitorState.BUYING -> MonitorState.SELECTING_SESSION
             MonitorState.SELECTING_SESSION -> MonitorState.SELECTING_TIER
             MonitorState.SELECTING_TIER -> MonitorState.CONFIRMING
             else -> state
         }
-        stepDeadline = System.currentTimeMillis() + STEP_TIMEOUT_MS
-        onStateChange(state)
+        val runnable = Runnable {
+            state = next
+            stepDeadline = System.currentTimeMillis() + STEP_TIMEOUT_MS
+            onStateChange(state)
+        }
+        pendingStep = runnable
+        handler.postDelayed(runnable, HumanBehavior.stepDelayMs())
+    }
+
+    private fun cancelPending() {
+        pendingStep?.let { handler.removeCallbacks(it) }
+        pendingStep = null
     }
 
     companion object {

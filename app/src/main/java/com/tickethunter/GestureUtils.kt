@@ -6,12 +6,16 @@ import android.graphics.Path
 
 object GestureUtils {
     fun pullToRefresh(service: AccessibilityService, screenWidth: Int) {
+        val startX = HumanBehavior.pullStartX(screenWidth)
+        val startY = HumanBehavior.pullStartY()
+        val endY = HumanBehavior.pullEndY()
+        val duration = HumanBehavior.pullDurationMs()
         val path = Path().apply {
-            moveTo(screenWidth / 2f, 400f)
-            quadTo(screenWidth / 2f, 900f, screenWidth / 2f, 1400f)
+            moveTo(startX, startY)
+            quadTo(startX + HumanBehavior.jitterPx(), (startY + endY) / 2, startX, endY)
         }
         val gesture = GestureDescription.Builder()
-            .addStroke(GestureDescription.StrokeDescription(path, 0, 300))
+            .addStroke(GestureDescription.StrokeDescription(path, 0, duration))
             .build()
         service.dispatchGesture(gesture, null, null)
     }

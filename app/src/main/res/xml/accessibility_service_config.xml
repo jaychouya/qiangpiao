@@ -6,5 +6,5 @@
     android:canPerformGestures="true"
     android:canRetrieveWindowContent="true"
     android:description="@string/accessibility_desc"
-    android:notificationTimeout="100"
-    android:packageNames="cn.damai,com.sankuai.movie" />
+    android:notificationTimeout="300"
+    android:packageNames="cn.damai,com.sankuai.movie,com.maoyan.android" />

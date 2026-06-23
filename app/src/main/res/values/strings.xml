@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">TicketHunter</string>
-    <string name="accessibility_desc">监控大麦/猫眼回流票，自动点击购买按钮</string>
+    <string name="accessibility_desc">辅助浏览演出信息</string>
 </resources>

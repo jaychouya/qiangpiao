@@ -26,6 +26,15 @@ abstract class BasePlatformAdapter : PlatformAdapter {
         return NodeUtils.findTierNode(root, tier)
     }
 
+    override fun matchAnyTier(root: AccessibilityNodeInfo, tiers: List<Int>): TierMatch? {
+        if (isSoldOut(root)) return null
+        for (tier in tiers) {
+            val match = NodeUtils.findTierNode(root, tier) ?: continue
+            return match
+        }
+        return null
+    }
+
     override fun stepBuy(root: AccessibilityNodeInfo): StepResult {
         return clickFirst(root, buyTexts)
     }

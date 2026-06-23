@@ -17,8 +17,8 @@ class MonitorForegroundService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val event = intent?.getStringExtra(EXTRA_EVENT) ?: "监控中"
-        val tier = intent?.getIntExtra(EXTRA_TIER, 0) ?: 0
+        val event = intent?.getStringExtra(EXTRA_EVENT) ?: "运行中"
+        val tiers = intent?.getStringExtra(EXTRA_TIERS) ?: ""
         createChannel()
         val pi = PendingIntent.getActivity(
             this, 0, Intent(this, MainActivity::class.java),
@@ -27,7 +27,7 @@ class MonitorForegroundService : Service() {
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_menu_compass)
             .setContentTitle("TicketHunter")
-            .setContentText("监控中: $event ¥$tier")
+            .setContentText("服务运行中: $event $tiers")
             .setContentIntent(pi)
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
@@ -66,7 +66,7 @@ class MonitorForegroundService : Service() {
 
     companion object {
         const val EXTRA_EVENT = "event"
-        const val EXTRA_TIER = "tier"
+        const val EXTRA_TIERS = "tiers"
         private const val CHANNEL_ID = "monitor_fg"
         private const val NOTIFY_ID = 2001
     }

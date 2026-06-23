@@ -15,6 +15,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var statusView: TextView
     private lateinit var btnResume: Button
+    private lateinit var btnStart: Button
+    private lateinit var radioDamai: RadioButton
+    private lateinit var radioMaoyan: RadioButton
     private val refreshHandler = android.os.Handler(android.os.Looper.getMainLooper())
     private val refreshRunnable = object : Runnable {
         override fun run() {
@@ -24,6 +27,8 @@ class MainActivity : AppCompatActivity() {
             } else {
                 View.GONE
             }
+            updateInstallStatus()
+            updateStartButton()
             refreshHandler.postDelayed(this, 500)
         }
     }
@@ -34,13 +39,19 @@ class MainActivity : AppCompatActivity() {
 
         val platformGroup = findViewById<RadioGroup>(R.id.platformGroup)
         val eventInput = findViewById<EditText>(R.id.eventInput)
-        val intervalInput = findViewById<EditText>(R.id.intervalInput)
+        val intervalMinInput = findViewById<EditText>(R.id.intervalMinInput)
+        val intervalMaxInput = findViewById<EditText>(R.id.intervalMaxInput)
         val tierInput = findViewById<EditText>(R.id.tierInput)
         val quantityInput = findViewById<EditText>(R.id.quantityInput)
         statusView = findViewById(R.id.statusText)
         btnResume = findViewById(R.id.btnResume)
+        btnStart = findViewById(R.id.btnStart)
+        radioDamai = findViewById(R.id.radioDamai)
+        radioMaoyan = findViewById(R.id.radioMaoyan)
 
-        intervalInput.setText("2000")
+        intervalMinInput.setText("2000")
+        intervalMaxInput.setText("6000")
+        tierInput.setText("580,380")
 
         findViewById<Button>(R.id.btnAccessibility).setOnClickListener {
             startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
@@ -54,21 +65,34 @@ class MainActivity : AppCompatActivity() {
             ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1)
         }
 
-        findViewById<Button>(R.id.btnStart).setOnClickListener {
-            val platform = if (platformGroup.checkedRadioButtonId == R.id.radioMaoyan) {
-                Platform.MAOYAN
-            } else {
-                Platform.DAMAI
+        platformGroup.setOnCheckedChangeListener { _, _ ->
+            updateInstallStatus()
+            updateStartButton()
+        }
+
+        btnStart.setOnClickListener {
+            val platform = selectedPlatform()
+            if (!AppDetector.isInstalled(packageManager, platform)) {
+                Toast.makeText(this, "未安装${platform.label}", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
-            val tier = tierInput.text.toString().toIntOrNull()
-            if (tier == null) {
-                Toast.makeText(this, "请输入指定票档", Toast.LENGTH_SHORT).show()
+            val tiers = TierParser.parse(tierInput.text.toString())
+            if (tiers.isEmpty()) {
+                Toast.makeText(this, "请输入票档，如 580,380", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             val eventName = eventInput.text.toString().ifBlank { "未命名场次" }
-            val interval = intervalInput.text.toString().toLongOrNull()?.coerceIn(1000, 5000) ?: 2000
+            val minInterval = intervalMinInput.text.toString().toLongOrNull()?.coerceIn(1000, 10000) ?: 2000
+            val maxInterval = intervalMaxInput.text.toString().toLongOrNull()?.coerceIn(1000, 10000) ?: 6000
             val quantity = quantityInput.text.toString().toIntOrNull()?.coerceIn(1, 6) ?: 1
-            val task = TicketTask(platform, eventName, targetTier = tier, refreshIntervalMs = interval, quantity = quantity)
+            val task = TicketTask(
+                platform = platform,
+                eventName = eventName,
+                targetTiers = tiers,
+                refreshMinMs = minInterval,
+                refreshMaxMs = maxInterval,
+                quantity = quantity
+            )
             TicketMonitorService.instance?.startMonitor(task)
                 ?: Toast.makeText(this, "请先开启无障碍服务", Toast.LENGTH_SHORT).show()
         }
@@ -82,15 +106,38 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btnOpenApp).setOnClickListener {
-            val platform = if (platformGroup.checkedRadioButtonId == R.id.radioMaoyan) {
-                Platform.MAOYAN
+            val platform = selectedPlatform()
+            val intent = AppDetector.launchIntent(packageManager, platform)
+            if (intent != null) {
+                startActivity(intent)
             } else {
-                Platform.DAMAI
+                Toast.makeText(this, "未安装${platform.label}", Toast.LENGTH_SHORT).show()
             }
-            packageManager.getLaunchIntentForPackage(platform.packageName)?.let {
-                startActivity(it)
-            } ?: Toast.makeText(this, "未安装${platform.label}", Toast.LENGTH_SHORT).show()
         }
+
+        updateInstallStatus()
+        updateStartButton()
+    }
+
+    private fun selectedPlatform(): Platform =
+        if (findViewById<RadioGroup>(R.id.platformGroup).checkedRadioButtonId == R.id.radioMaoyan) {
+            Platform.MAOYAN
+        } else {
+            Platform.DAMAI
+        }
+
+    private fun updateInstallStatus() {
+        val damaiOk = AppDetector.isInstalled(packageManager, Platform.DAMAI)
+        val maoyanOk = AppDetector.isInstalled(packageManager, Platform.MAOYAN)
+        radioDamai.text = if (damaiOk) "大麦 ✅" else "大麦 ❌"
+        radioMaoyan.text = if (maoyanOk) "猫眼 ✅" else "猫眼 ❌"
+    }
+
+    private fun updateStartButton() {
+        val platform = selectedPlatform()
+        val installed = AppDetector.isInstalled(packageManager, platform)
+        btnStart.isEnabled = installed
+        btnStart.alpha = if (installed) 1f else 0.5f
     }
 
     private fun requestBatteryExemption() {
@@ -107,6 +154,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        updateInstallStatus()
+        updateStartButton()
         refreshHandler.post(refreshRunnable)
     }
 

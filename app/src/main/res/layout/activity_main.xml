@@ -46,8 +46,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:hint="指定票档，如 580"
-        android:inputType="number" />
+        android:hint="票档，逗号分隔，如 580,380,880"
+        android:inputType="text" />
 
     <EditText
         android:id="@+id/quantityInput"
@@ -58,11 +58,19 @@
         android:inputType="number" />
 
     <EditText
-        android:id="@+id/intervalInput"
+        android:id="@+id/intervalMinInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:hint="刷新间隔ms，默认2000"
+        android:hint="最短刷新间隔ms，默认2000"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/intervalMaxInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="最长刷新间隔ms，默认6000"
         android:inputType="number" />
 
     <Button

@@ -7,6 +7,7 @@ interface PlatformAdapter {
     fun pullToRefresh(service: AccessibilityService, root: AccessibilityNodeInfo)
     fun isSoldOut(root: AccessibilityNodeInfo): Boolean
     fun matchTier(root: AccessibilityNodeInfo, tier: Int): TierMatch?
+    fun matchAnyTier(root: AccessibilityNodeInfo, tiers: List<Int>): TierMatch?
     fun stepBuy(root: AccessibilityNodeInfo): StepResult
     fun stepSession(root: AccessibilityNodeInfo): StepResult
     fun stepTier(root: AccessibilityNodeInfo, tier: Int): StepResult
