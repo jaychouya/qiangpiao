@@ -1,0 +1,12 @@
+
+
+# Cursor Contexts
+.contexts/
+
+.DS_Store
+*.iml
+.gradle/
+build/
+app/build/
+local.properties
+.idea/

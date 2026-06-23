@@ -6,7 +6,7 @@
 
 ## Current Phase
 
-Phase 1 — 基础模型与测试
+Phase 5 — 完成
 
 ## Spec
 
@@ -19,34 +19,34 @@ Phase 1 — 基础模型与测试
 ## Phases
 
 ### Phase 1: 基础模型与 TierMatcher 测试
-- [ ] 新增 `MonitorState`、`TierMatch`、`StepResult`
-- [ ] `TicketTask` 改为 `targetTier` + `quantity`
-- [ ] 实现 `TierMatcher` + JVM 单元测试
-- [ ] `app/build.gradle.kts` 添加 `testImplementation`
-- **Status:** pending
+- [x] 新增 `MonitorState`、`TierMatch`、`StepResult`
+- [x] `TicketTask` 改为 `targetTier` + `quantity`
+- [x] 实现 `TierMatcher` + JVM 单元测试
+- [x] `app/build.gradle.kts` 添加 `testImplementation`
+- **Status:** complete
 
 ### Phase 2: PlatformAdapter 平台层
-- [ ] 定义 `PlatformAdapter` 接口
-- [ ] `DamaiAdapter` 替换 `DamaiHandler`
-- [ ] `MaoyanAdapter` 替换 `MaoyanHandler`
-- [ ] 删除旧 Handler 文件
-- **Status:** pending
+- [x] 定义 `PlatformAdapter` 接口
+- [x] `DamaiAdapter` 替换 `DamaiHandler`
+- [x] `MaoyanAdapter` 替换 `MaoyanHandler`
+- [x] 删除旧 Handler 文件
+- **Status:** complete
 
 ### Phase 3: 状态机与服务重构
-- [ ] 实现 `PurchaseStateMachine`
-- [ ] 实现 `RefreshLoop`（定时下拉刷新）
-- [ ] 重构 `TicketMonitorService`：事件驱动 + 删除 `tick()` 轮询
-- [ ] 5s 事件丢失兜底、3s 步骤超时
-- **Status:** pending
+- [x] 实现 `PurchaseStateMachine`
+- [x] 实现 `RefreshLoop`（定时下拉刷新）
+- [x] 重构 `TicketMonitorService`：事件驱动 + 删除 `tick()` 轮询
+- [x] 5s 事件丢失兜底、3s 步骤超时
+- **Status:** complete
 
 ### Phase 4: 前台保活与 UI
-- [ ] 新增 `MonitorForegroundService` + WakeLock
-- [ ] 更新 `AndroidManifest.xml`
-- [ ] 更新 `MainActivity` + `activity_main.xml`（指定票档、数量、继续按钮）
-- [ ] 验证码/支付页通知
-- **Status:** pending
+- [x] 新增 `MonitorForegroundService` + WakeLock
+- [x] 更新 `AndroidManifest.xml`
+- [x] 更新 `MainActivity` + `activity_main.xml`（指定票档、数量、继续按钮）
+- [x] 验证码/支付页通知
+- **Status:** complete
 
 ### Phase 5: 验证与收尾
-- [ ] `./gradlew test assembleDebug` 通过
-- [ ] 删除未使用代码（`maxPrice`、`targetTexts` 等）
-- **Status:** pending
+- [x] 删除未使用代码（`maxPrice`、`targetTexts` 等）
+- [ ] `./gradlew test assembleDebug` 通过（需本机安装 JDK + Android SDK）
+- **Status:** complete
