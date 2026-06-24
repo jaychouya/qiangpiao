@@ -42,12 +42,13 @@ abstract class BasePlatformAdapter : PlatformAdapter {
 
     override fun stepSession(root: AccessibilityNodeInfo): StepResult {
         if (NodeUtils.findByTexts(root, tierPageTexts) != null) return StepResult.Skipped
-        if (NodeUtils.findByTexts(root, buyTexts) != null) return StepResult.Skipped
+        NodeUtils.findByTexts(root, buyTexts)?.let { return clickNode(it) }
         val session = NodeUtils.findSessionOption(root) ?: return StepResult.Skipped
         return clickNode(session)
     }
 
     override fun stepTier(root: AccessibilityNodeInfo, tier: Int): StepResult {
+        NodeUtils.findByTexts(root, buyTexts)?.let { return clickNode(it) }
         val match = NodeUtils.findAvailableTierNode(root, tier) ?: return StepResult.NotFound
         return clickNode(match.node)
     }

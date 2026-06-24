@@ -160,7 +160,6 @@ class TicketMonitorService : AccessibilityService() {
         val match = adp.matchAnyTier(root, task.targetTiers)
         if (match != null) {
             statusText = "命中 ¥${match.tier}，开始下单"
-            clickNode(match.node)
             purchaseMachine?.start(match.tier)
             monitorState = MonitorState.BUYING
         } else {

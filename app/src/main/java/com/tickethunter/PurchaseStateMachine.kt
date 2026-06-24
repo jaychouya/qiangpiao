@@ -143,7 +143,7 @@ class PurchaseStateMachine(
     }
 
     companion object {
-        const val STEP_TIMEOUT_MS = 8000L
+        const val STEP_TIMEOUT_MS = 12000L
         private const val TICK_MS = 400L
     }
 }
